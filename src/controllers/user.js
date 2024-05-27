@@ -34,7 +34,11 @@ export const updateProfile = async (req, res) => {
 
 export const addProfile = async (req, res) => {
   try {
-    const profile = new UserModel(req.body);
+    const profile = new UserModel({
+      uid: req.body.uid,
+      username: req.body.username,
+      email: req.body.email,
+    });
     const savedProfile = await profile.save();
     res.status(201).json(savedProfile);
   } catch (error) {

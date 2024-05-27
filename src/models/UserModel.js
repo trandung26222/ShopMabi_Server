@@ -17,6 +17,9 @@ const schema = new mongoose.Schema(
     username: {
       type: String,
     },
+    email: {
+      type: String,
+    },
     uid: {
       type: String,
     },
