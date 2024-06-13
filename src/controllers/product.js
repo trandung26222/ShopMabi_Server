@@ -3,8 +3,18 @@ import { DataProduct } from "./Data.js";
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await ProductModel.find();
-    res.status(200).json(products);
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 10;
+    console.log("page", page);
+    console.log("size", size);
+
+    const skip = (page - 1) * size;
+
+    const products = await ProductModel.find().skip(skip).limit(size);
+
+    const totalProducts = await ProductModel.countDocuments();
+    const totalPages = Math.ceil(totalProducts / size);
+    res.status(200).json({ totalPages, totalProducts, products });
   } catch (error) {
     res.status(500).json(error);
   }

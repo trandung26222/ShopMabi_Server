@@ -5,6 +5,7 @@ import {
   deleteProductonCart,
   getCart,
   add1OnCart,
+  changequantity,
 } from "../../controllers/cart.js";
 
 const router = express.Router();
@@ -12,6 +13,7 @@ const router = express.Router();
 router.post("/addToCart", addToCart);
 router.post("/sub1OnCart", sub1OnCart);
 router.post("/add1OnCart", add1OnCart);
+router.post("/changequantity", changequantity);
 router.delete("/deleteProductonCart", deleteProductonCart);
 router.get("/getCart/:userId", getCart);
 

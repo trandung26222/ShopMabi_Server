@@ -85,6 +85,29 @@ export const add1OnCart = async (req, res) => {
   }
 };
 
+export const changequantity = async (req, res) => {
+  try {
+    var { userId, productId, mau, size, quantitychange } = req.body;
+    let cart = await CartModel.findOne({ userId: userId });
+
+    const existingProductIndex = cart.products.findIndex((product) => {
+      return (
+        product.productId.toString() === productId &&
+        product.mau === mau &&
+        product.size === size
+      );
+    });
+
+    cart.products[existingProductIndex].quantity += quantitychange;
+
+    await cart.save();
+
+    res.status(200).json(cart);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const deleteProductonCart = async (req, res) => {
   try {
     var { userId, productId, mau, size } = req.body;
