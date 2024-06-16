@@ -23,6 +23,9 @@ const schema = new mongoose.Schema(
     uid: {
       type: String,
     },
+    password: {
+      type: String,
+    },
   },
   {
     timestamps: true,

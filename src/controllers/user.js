@@ -1,4 +1,74 @@
 import { UserModel } from "../models/UserModel.js";
+import { hashPassword, comparePassword } from "../utils/password.js";
+import { messageResponse } from "../utils/messageResponse.js";
+import { createJWT, verifyToken } from "../utils/jwtAction.js";
+
+export const signup = async (req, res) => {
+  try {
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
+    const hashedPassword = await hashPassword(password);
+
+    const users = await UserModel.find();
+
+    if (
+      users.find((user) => user.username === username || user.email === email)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Username or email already exists" });
+    } else {
+      const user = new UserModel({
+        username: username,
+        email: email,
+        password: hashedPassword,
+      });
+      const savedUser = await user.save();
+      res.status(200).json(savedUser);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    console.log(email, "email");
+    console.log(password, "password");
+
+    const user = await UserModel.findOne({ email: email });
+
+    if (!user) {
+      res.status(400).json(messageResponse(400, "Invalid email address"));
+    } else {
+      const checkpassword = await comparePassword(password, user.password);
+      if (checkpassword) {
+        const payload = {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+        };
+        let token = createJWT(payload);
+
+        res.cookie("token", token, {
+          httpOnly: true, // Chỉ có thể truy cập bởi máy chủ
+          maxAge: 3600000, // Thời gian tồn tại của cookie (1 giờ)
+          sameSite: "None", // Cho phép gửi cookie qua các yêu cầu từ các trang web khác
+          secure: true, // Chỉ gửi cookie qua kết nối HTTPS
+        });
+
+        res.status(200).json(messageResponse(200, "Login successful"));
+      } else {
+        res.status(400).json(messageResponse(400, "Invalid password"));
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export const getProfile = async (req, res) => {
   try {

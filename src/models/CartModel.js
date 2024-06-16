@@ -9,6 +9,10 @@ const schema = new mongoose.Schema(
     },
     products: [
       {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
         productId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Products",

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"
+      integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <input type="text" name="email" />
+    <input type="text" name="password" />
+    <button class="login" onclick="handleLogin">log in</button>
+
+    <button class="test">test</button>
+    <button class="getCoookie">getCoookie</button>
+  </body>
+  <script>
+    const handleTest = () => {
+      axios
+        .get(
+          "http://localhost:5000/api/user/product/getAllProducts/?page=1&size=10",
+          {
+            withCredentials: true, // Bật để gửi và nhận cookie trong CORS
+          }
+        )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const handleLogin = (email, password) => {
+      axios
+        .post(
+          "http://localhost:5000/api/user/login",
+          {
+            email: email,
+            password: password,
+          },
+          {
+            withCredentials: true, // Bật để gửi và nhận cookie trong CORS
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          console.log("cookieHeader");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const email = document.getElementsByName("email")[0];
+    const password = document.getElementsByName("password")[0];
+    const login = document.getElementsByClassName("login")[0];
+    login.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleLogin(email.value, password.value);
+    });
+
+    document.querySelector(".test").addEventListener("click", (e) => {
+      e.preventDefault();
+      handleTest();
+    });
+    document.querySelector(".getCoookie").addEventListener("click", (e) => {
+      e.preventDefault();
+      setCookie("nameCk", "valueCk", "1");
+
+      // Lấy chuỗi cookie từ document.cookie
+      const cookies = document.cookie;
+
+      // Phân tách chuỗi cookie thành một mảng các cặp tên=giá trị
+      const cookieArray = cookies.split(";");
+
+      // Đối với mỗi cặp cookie, bạn có thể in ra hoặc xử lý như bạn muốn
+      cookieArray.forEach((cookie) => {
+        // Lấy tên cookie bằng cách cắt khoảng trắng ở đầu (nếu có)
+        const cookieName = cookie.trim().split("=")[0];
+        // Lấy giá trị cookie bằng cách cắt khoảng trắng ở đầu (nếu có)
+        const cookieValue = cookie.trim().split("=")[1];
+
+        // In ra console, hoặc làm bất cứ điều gì khác bạn muốn với từng cookie
+        console.log(`${cookieName}: ${cookieValue}`);
+      });
+    });
+
+    function setCookie(cname, cvalue, exdays) {
+      const d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      let expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+  </script>
+</html>

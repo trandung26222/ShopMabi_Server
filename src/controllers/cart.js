@@ -87,7 +87,8 @@ export const add1OnCart = async (req, res) => {
 
 export const changequantity = async (req, res) => {
   try {
-    var { userId, productId, mau, size, quantitychange } = req.body;
+    let { userId, productId, mau, size, quantitychange } = req.query;
+    console.log(userId, productId, mau, size, quantitychange);
     let cart = await CartModel.findOne({ userId: userId });
 
     const existingProductIndex = cart.products.findIndex((product) => {
@@ -98,7 +99,7 @@ export const changequantity = async (req, res) => {
       );
     });
 
-    cart.products[existingProductIndex].quantity += quantitychange;
+    cart.products[existingProductIndex].quantity = Number(quantitychange);
 
     await cart.save();
 
@@ -167,9 +168,6 @@ export const getCart = async (req, res) => {
       "Cache-Control",
       "no-store, no-cache, must-revalidate, private"
     );
-
-    console.log("getcart--------------------------------");
-    console.log(products.length);
 
     res.status(200).json(products);
   } catch (error) {
